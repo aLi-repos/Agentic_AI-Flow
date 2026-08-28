@@ -1,0 +1,31 @@
+{
+  "name": "agentflow-ai-platform",
+  "version": "1.0.0",
+  "description": "Agentic AI Operations Automation Platform (Agentflow_AI)",
+  "main": "server/src/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build:client": "cd client && npm run build",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm start"
+  },
+  "keywords": [
+    "ai",
+    "agentic",
+    "workflow",
+    "automation",
+    "orchestration",
+    "langgraph",
+    "multi-agent",
+    "react-flow"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
