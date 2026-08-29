@@ -25,32 +25,41 @@ The platform executes workflows through a deterministic and autonomous chain of 
 ## 🏗️ Architecture Overview
 
 ```mermaid
+subgraph "Third-Party Integrations Layer (AES-256 Encrypted)"
 graph TD
-    User([Operator / User]) -->|Natural Language Prompt| AIBuilder[AI Workflow Compiler]
-    AIBuilder -->|OpenRouter / Gemini / Rule Engine| DAG[Visual React Flow Canvas]
-    DAG -->|Save / Execute| BackendAPI[Express REST API]
-    
-    subgraph Agentic Orchestration Layer
-        BackendAPI --> Planner[1. Planner Agent]
-        Planner -->|Topological Plan & Confidence| Executor[2. Execution Agent]
-        Executor -->|Run Step & Evaluate Templates| Validator[3. Validation Agent]
-        Validator -->|Schema Valid?| Monitor[5. Monitoring Agent]
-        Validator -->|Failed Validation / Error| Recovery[4. Recovery Agent]
-        Recovery -->|Retry with Backoff| Executor
-        Recovery -->|Escalate| Monitor
+    User([Operator / User]) --> Prompt[Natural Language Prompt]
+    Prompt --> AIBuilder[AI Builder / AI Workflow Compiler]
+    AIBuilder --> Providers[OpenRouter / Gemini / Rule Engine]
+    AIBuilder --> DAG[Visual React Flow Canvas]
+    DAG --> Executor[Backend API / Express REST API]
+    Executor --> Save[Save / Execute]
+
+    subgraph "Agentic Orchestration Layer"
+        BackendAPI[Backend API] --> Planner["1. Planner Agent"]
+        Planner --> ExecutorAgent["2. Execution Agent"]
+        ExecutorAgent --> Validator["3. Validation Agent"]
+        Validator --> Monitor["5. Monitoring Agent"]
+        Validator --> Recovery["4. Recovery Agent"]
+        Validator --> ValidationResult{Schema Valid?}
+        ValidationResult -->|Yes| Monitor
+        ValidationResult -->|No| Recovery
+        Recovery --> Retry[Retry with Backoff]
+        Recovery --> Escalate[Escalate]
+        Retry --> ExecutorAgent
+        Escalate --> Monitor
     end
 
-    subgraph Third-Party Integrations Layer (AES-256 Encrypted)
-        Executor --> Gmail[Gmail API]
-        Executor --> Slack[Slack API / Webhooks]
-        Executor --> Discord[Discord Webhooks / Bot]
-        Executor --> Sheets[Google Sheets API]
+    subgraph "Third-Party Integrations Layer (AES-256 Encrypted)"
+        ExecutorAgent --> Gmail[Gmail API]
+        ExecutorAgent --> Slack[Slack API / Webhooks]
+        ExecutorAgent --> Discord[Discord Webhooks / Bot]
+        ExecutorAgent --> Sheets[Google Sheets API]
     end
 
-    subgraph Real-Time & Persistence
-        Monitor -->|Socket.IO Events| UIStream[Live Timeline & Notifications]
-        Monitor -->|Audit Documents| MongoDB[(MongoDB / Memory Store)]
-        BackendAPI --> Queue[(BullMQ Redis / Memory Queue)]
+    subgraph "Real-Time & Persistence"
+        ExecutorAgent --> DB[(MongoDB)]
+        ExecutorAgent --> Redis[(Redis)]
+        Monitor --> Events[Real-Time Events]
     end
 ```
 
