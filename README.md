@@ -25,41 +25,38 @@ The platform executes workflows through a deterministic and autonomous chain of 
 ## 🏗️ Architecture Overview
 
 ```mermaid
-subgraph "Third-Party Integrations Layer (AES-256 Encrypted)"
-graph TD
+   graph TD
     User([Operator / User]) --> Prompt[Natural Language Prompt]
     Prompt --> AIBuilder[AI Builder / AI Workflow Compiler]
     AIBuilder --> Providers[OpenRouter / Gemini / Rule Engine]
     AIBuilder --> DAG[Visual React Flow Canvas]
-    DAG --> Executor[Backend API / Express REST API]
-    Executor --> Save[Save / Execute]
+    DAG --> BackendAPI[Backend API / Express REST API]
+    BackendAPI --> Save[Save / Execute]
 
     subgraph "Agentic Orchestration Layer"
-        BackendAPI[Backend API] --> Planner["1. Planner Agent"]
+        BackendAPI --> Planner["1. Planner Agent"]
         Planner --> ExecutorAgent["2. Execution Agent"]
         ExecutorAgent --> Validator["3. Validation Agent"]
-        Validator --> Monitor["5. Monitoring Agent"]
-        Validator --> Recovery["4. Recovery Agent"]
-        Validator --> ValidationResult{Schema Valid?}
-        ValidationResult -->|Yes| Monitor
-        ValidationResult -->|No| Recovery
-        Recovery --> Retry[Retry with Backoff]
-        Recovery --> Escalate[Escalate]
+        Validator --> ValidationResult{"Schema Valid?"}
+        ValidationResult -->|Yes| Monitor["5. Monitoring Agent"]
+        ValidationResult -->|No| Recovery["4. Recovery Agent"]
+        Recovery --> Retry["Retry with Backoff"]
+        Recovery --> Escalate["Escalate"]
         Retry --> ExecutorAgent
         Escalate --> Monitor
     end
 
     subgraph "Third-Party Integrations Layer (AES-256 Encrypted)"
-        ExecutorAgent --> Gmail[Gmail API]
-        ExecutorAgent --> Slack[Slack API / Webhooks]
-        ExecutorAgent --> Discord[Discord Webhooks / Bot]
-        ExecutorAgent --> Sheets[Google Sheets API]
+        ExecutorAgent --> Gmail["Gmail API"]
+        ExecutorAgent --> Slack["Slack API / Webhooks"]
+        ExecutorAgent --> Discord["Discord Webhooks / Bot"]
+        ExecutorAgent --> Sheets["Google Sheets API"]
     end
 
-    subgraph "Real-Time & Persistence"
-        ExecutorAgent --> DB[(MongoDB)]
+    subgraph "Real-Time and Persistence"
+        ExecutorAgent --> MongoDB[(MongoDB)]
         ExecutorAgent --> Redis[(Redis)]
-        Monitor --> Events[Real-Time Events]
+        Monitor --> Events["Real-Time Events"]
     end
 ```
 
